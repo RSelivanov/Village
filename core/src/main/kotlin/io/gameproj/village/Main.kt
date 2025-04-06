@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.Gdx
 
+import io.gameproj.village.world.World
+
 
 class Main : KtxGame<KtxScreen>() {
     override fun create() {
@@ -33,23 +35,23 @@ class FirstScreen : KtxScreen {
     private val viewport = FitViewport(virtualWidth, virtualHeight, camera)
     private val cameraController = CameraController(camera)
 
-    // Создаем объект карта мира
-    private val map = Map(32, 32, 32f)
+    // Создаем мир ( генерируем )
+    private val world = World(64, 64)
 
     // Создаем объект для отрисовки 2D-графики (спрайтов) (из библиотеки)
     private val batch = SpriteBatch()
     // Создаем объект для отрисовки наших страйтов
-    private val renderer = Renderer(map, batch, camera)
+    private val renderer = Renderer(world, batch, camera)
 
     private val entities = listOf(
-        UnitEntity(map, 5, 5, "units/Human.png"),
-        UnitEntity(map, 10, 10, "units/Zombie.png")
+        UnitEntity(world, 5, 5, "units/Human.png"),
+        UnitEntity(world, 10, 10, "units/Zombie.png")
     )
 
     // Тут инициализация всякая
-    init
-    {
+    init {
         Gdx.input.inputProcessor = cameraController
+
     }
 
     // Срабатывает 60 раз в секунду

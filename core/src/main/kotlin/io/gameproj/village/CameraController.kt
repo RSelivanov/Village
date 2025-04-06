@@ -50,4 +50,12 @@ class CameraController(private val camera: OrthographicCamera) : InputAdapter() 
         }
         return false
     }
+
+    // Tile size default render on screen 32x32, zoom max: 64x64, zoom min 16x16
+    override fun scrolled(amountX: Float, amountY: Float): Boolean {
+        camera.zoom += amountY * 0.1f
+        camera.zoom = camera.zoom.coerceIn(0.5f, 2f)
+        return true
+    }
+
 }

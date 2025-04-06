@@ -1,13 +1,14 @@
 package io.gameproj.village
 
+import io.gameproj.village.world.World
+import io.gameproj.village.world.Cell
+
 class UnitEntity(
-    private val map: Map,
+    private val world: World,
     posX: Int,
     posY: Int,
-    spritePath: String
+    spritePath: String,
 ) : Entity(posX, posY, spritePath) {
-
-
 
     fun update() {
         val directions = listOf(
@@ -20,13 +21,16 @@ class UnitEntity(
         for ((dx, dy) in directions) {
             val nextX = posX + dx
             val nextY = posY + dy
-            if (map.isInside(nextX, nextY)) {
-                posX = nextX
-                posY = nextY
-                break
+
+            if (world.isInside(nextX, nextY)) {
+                val cell = world.getCell(nextX, nextY)
+
+                if (cell.isWalkable()) {
+                    posX = nextX
+                    posY = nextY
+                    break
+                }
             }
         }
     }
-
-
 }

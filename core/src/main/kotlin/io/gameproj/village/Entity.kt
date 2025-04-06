@@ -6,7 +6,7 @@ import ktx.assets.toInternalFile
 open class Entity(
     var posX: Int,
     var posY: Int,
-    spritePath: String
+    spritePath: String,
 ) {
     var texture: Texture = Texture(spritePath.toInternalFile())
 
