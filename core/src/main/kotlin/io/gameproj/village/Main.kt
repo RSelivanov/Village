@@ -27,6 +27,8 @@ class FirstScreen : KtxScreen {
     // Для создания метода update
     var timer = 0f
     val stepTime = 1f // каждые 1 секунду
+    var timeOfDay = 0f
+    val maxDarkness = 0.6f // Не больше!
 
     // Окно игры и камера
     private val virtualWidth = 1920f
@@ -59,7 +61,7 @@ class FirstScreen : KtxScreen {
     {
         clearScreen(0.7f, 0.7f, 0.7f)
 
-        renderer.render(entities);
+        renderer.render(entities,getDarknessAlpha());
 
 
         timer += delta
@@ -68,6 +70,8 @@ class FirstScreen : KtxScreen {
             timer = 0f
             update()
         }
+
+        timeOfDay = (timeOfDay + delta * 0.01f) % 1f
     }
 
     // Срабатывает 1 раз в секунду
@@ -76,6 +80,16 @@ class FirstScreen : KtxScreen {
         for (entity in entities)
         {
             entity.update()
+        }
+
+    }
+
+    fun getDarknessAlpha(): Float {
+        return when {
+            timeOfDay < 0.25f -> 0f
+            timeOfDay < 0.5f  -> (timeOfDay - 0.25f) * 4f * maxDarkness
+            timeOfDay < 0.75f -> maxDarkness - (timeOfDay - 0.5f) * 4f * maxDarkness
+            else              -> (1f - timeOfDay) * 4f * maxDarkness
         }
     }
 

@@ -1,11 +1,15 @@
 package io.gameproj.village
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import io.gameproj.village.world.*
 import ktx.assets.toInternalFile
 import ktx.graphics.use
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
 
 class Renderer(
     private val world: World,
@@ -14,6 +18,7 @@ class Renderer(
 ) {
 
     private val tileSize = 64f
+    private val shapeRenderer = ShapeRenderer()
 
     // Словарь текстур для земли
     private val groundTextures = mapOf(
@@ -32,7 +37,7 @@ class Renderer(
         BlockerType.BUSH to Texture("tiles/bush.png".toInternalFile())
     )
 
-    fun render(entities: List<Entity>) {
+    fun render(entities: List<Entity>, darknessAlpha: Float = 0f) {
         camera.update()
         batch.projectionMatrix = camera.combined
 
@@ -60,6 +65,21 @@ class Renderer(
                 it.draw(entity.texture, entity.posX * tileSize, entity.posY * tileSize, tileSize, tileSize)
             }
         }
+
+        Gdx.gl.glEnable(GL20.GL_BLEND)
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+// а затем — затемнение
+        shapeRenderer.projectionMatrix = camera.combined
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.color = Color(0.1f, 0.1f, 0.2f, darknessAlpha) // полупрозрачное затемнение
+        shapeRenderer.rect(
+            camera.position.x - camera.viewportWidth / 2f * camera.zoom,
+            camera.position.y - camera.viewportHeight / 2f * camera.zoom,
+            camera.viewportWidth * camera.zoom,
+            camera.viewportHeight * camera.zoom
+        )
+        shapeRenderer.end()
+        Gdx.gl.glDisable(GL20.GL_BLEND)
     }
 
     fun dispose() {
