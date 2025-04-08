@@ -1,9 +1,9 @@
-package io.gameproj.village
+package io.gameproj.village.entity
 
 import com.badlogic.gdx.graphics.Texture
 import ktx.assets.toInternalFile
 
-open class Entity(
+abstract class Entity(
     var posX: Int,
     var posY: Int,
     spritePath: String,
@@ -13,4 +13,13 @@ open class Entity(
     open fun dispose() {
         texture.dispose()
     }
+
+    open fun interact() {
+        println("Стоит бездействет")
+    }
+
+    open fun log( text : String) {
+        print("log to file $text")
+    }
+
 }

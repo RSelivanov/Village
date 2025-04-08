@@ -9,6 +9,8 @@ import ktx.async.KtxAsync
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.Gdx
+import io.gameproj.village.entity.UnitEntity
+import io.gameproj.village.time.DayNightCycle
 
 import io.gameproj.village.world.World
 
@@ -45,6 +47,9 @@ class FirstScreen : KtxScreen {
     // Создаем объект для отрисовки наших страйтов
     private val renderer = Renderer(world, batch, camera)
 
+    // Создаем объект цикла дня и ночи
+    private val dayNightCycle = DayNightCycle()
+
     private val entities = listOf(
         UnitEntity(world, 5, 5, "units/Human.png"),
         UnitEntity(world, 10, 10, "units/Zombie.png")
@@ -54,43 +59,33 @@ class FirstScreen : KtxScreen {
     init {
         Gdx.input.inputProcessor = cameraController
 
+        // Отправляем сущности на рендер
     }
 
     // Срабатывает 60 раз в секунду
     override fun render(delta: Float)
     {
-        clearScreen(0.7f, 0.7f, 0.7f)
+        clearScreen(0.0f, 0.0f, 0.0f)
 
-        renderer.render(entities,getDarknessAlpha());
+        renderer.update(entities)
+        dayNightCycle.update(delta)
+
+
 
 
         timer += delta
-        if (timer >= stepTime)
-        {
-            timer = 0f
-            update()
-        }
-
+        if (timer >= stepTime) { timer = 0f;  secondUpdate(); }
         timeOfDay = (timeOfDay + delta * 0.01f) % 1f
     }
 
     // Срабатывает 1 раз в секунду
-    fun update()
+    fun secondUpdate()
     {
         for (entity in entities)
         {
-            entity.update()
+            entity.secondUpdate()
         }
 
-    }
-
-    fun getDarknessAlpha(): Float {
-        return when {
-            timeOfDay < 0.25f -> 0f
-            timeOfDay < 0.5f  -> (timeOfDay - 0.25f) * 4f * maxDarkness
-            timeOfDay < 0.75f -> maxDarkness - (timeOfDay - 0.5f) * 4f * maxDarkness
-            else              -> (1f - timeOfDay) * 4f * maxDarkness
-        }
     }
 
     override fun resize(width: Int, height: Int)

@@ -1,16 +1,15 @@
-package io.gameproj.village
+package io.gameproj.village.entity
 
 import io.gameproj.village.world.World
-import io.gameproj.village.world.Cell
 
 class UnitEntity(
     private val world: World,
     posX: Int,
     posY: Int,
     spritePath: String,
-) : Entity(posX, posY, spritePath) {
+) : Entity(posX, posY, spritePath), UnitInteract {
 
-    fun update() {
+    fun secondUpdate() {
         val directions = listOf(
             1 to 0,   // вправо
             -1 to 0,  // влево
@@ -33,4 +32,22 @@ class UnitEntity(
             }
         }
     }
+
+    override fun interact() {
+        println("Лечить")
+    }
+
+    override fun attac() {
+        println("attac")
+    }
+
+    override fun run() {
+        println("run")
+    }
+
+    override fun sleep() {
+        println("sleep")
+    }
+
+
 }

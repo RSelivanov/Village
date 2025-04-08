@@ -17,14 +17,14 @@ object WorldGenerator {
                 }
 
                 // Генерация блокеров
-                val blocker = when (Random.nextInt(100)) {
-                    in 0..7 -> BlockerType.TREE      // 8%
-                    in 8..9 -> BlockerType.ROCK      // 2%
-                    in 10..11 -> BlockerType.BUSH     // 2%
+                val entityType = when (Random.nextInt(100)) {
+                    in 0..7 -> EntityType.TREE      // 8%
+                    in 8..9 -> EntityType.ROCK      // 2%
+                    in 10..11 -> EntityType.BUSH     // 2%
                     else -> null                    // 90% пусто
                 }
 
-                Cell(ground = ground, blocker = blocker)
+                Cell(ground = ground, entity = entityType)
             }
         }
 

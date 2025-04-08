@@ -1,6 +1,6 @@
 package io.gameproj.village.world
 
-import io.gameproj.village.Entity
+import io.gameproj.village.entity.Entity
 
 // Основной тип земли
 enum class GroundType(val walkable: Boolean, val effect: CellEffect?) {
@@ -9,29 +9,6 @@ enum class GroundType(val walkable: Boolean, val effect: CellEffect?) {
     LAVA(true, CellEffect.BURNING),
     POISON(true, CellEffect.POISONED),
     VOID(false, null);
-
-    fun toChar(): Char = when (this) {
-        GRASS -> '.'
-        WATER -> '~'
-        LAVA -> '^'
-        POISON -> '%'
-        VOID -> '#'
-    }
-}
-
-// Тип объектов, стоящих НА земле (блокеры)
-enum class BlockerType(val walkable: Boolean) {
-    TREE(false),
-    WALL(false),
-    ROCK(false),
-    BUSH(true);
-
-    fun toChar(): Char = when (this) {
-        TREE -> 'T'
-        WALL -> 'W'
-        ROCK -> 'R'
-        BUSH -> 'B'
-    }
 }
 
 // Эффекты, накладываемые на юнита при входе в клетку
@@ -41,16 +18,23 @@ enum class CellEffect {
     POISONED
 }
 
+enum class EntityType(val blocker: Boolean) {
+    HUMAN(true),
+    ZOMBIE(true),
+    TREE(true),
+    WALL(true),
+    ROCK(true),
+    BUSH(false);
+}
+
 // Основной класс клетки
 data class Cell(
     var ground: GroundType = GroundType.GRASS,
-    var blocker: BlockerType? = null,
-    var occupant: Entity? = null
+    var entity: EntityType? = null
 ) {
     // Можно ли войти в эту клетку?
     fun isWalkable(): Boolean {
-        if (occupant != null) return false
-        if (blocker != null && !blocker!!.walkable) return false
+        if (entity != null && !entity!!.blocker) return true
         return ground.walkable
     }
 
@@ -61,6 +45,6 @@ data class Cell(
 
     // Очистить клетку от юнита (например, если он ушёл или умер)
     fun clearOccupant() {
-        occupant = null
+        entity = null
     }
 }

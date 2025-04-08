@@ -10,6 +10,7 @@ import ktx.assets.toInternalFile
 import ktx.graphics.use
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
+import io.gameproj.village.entity.Entity
 
 class Renderer(
     private val world: World,
@@ -20,7 +21,7 @@ class Renderer(
     private val tileSize = 64f
     private val shapeRenderer = ShapeRenderer()
 
-    // Словарь текстур для земли
+    // ВАЖНО! Мы тут подгружаем  текстуры один раз при создании экземпляра класса Renderer
     private val groundTextures = mapOf(
         GroundType.GRASS to Texture("tiles/grass.png".toInternalFile()),
         GroundType.WATER to Texture("tiles/water.png".toInternalFile()),
@@ -29,15 +30,15 @@ class Renderer(
         GroundType.VOID to Texture("tiles/void.png".toInternalFile())
     )
 
-    // Словарь текстур для блокеров (объектов на земле)
-    private val blockerTextures = mapOf(
-        BlockerType.TREE to Texture("tiles/tree.png".toInternalFile()),
-        BlockerType.ROCK to Texture("tiles/rock.png".toInternalFile()),
-        BlockerType.WALL to Texture("tiles/wall.png".toInternalFile()),
-        BlockerType.BUSH to Texture("tiles/bush.png".toInternalFile())
+    private val entityTextures = mapOf(
+        EntityType.TREE to Texture("tiles/tree.png".toInternalFile()),
+        EntityType.ROCK to Texture("tiles/rock.png".toInternalFile()),
+        EntityType.WALL to Texture("tiles/wall.png".toInternalFile()),
+        EntityType.BUSH to Texture("tiles/bush.png".toInternalFile())
     )
 
-    fun render(entities: List<Entity>, darknessAlpha: Float = 0f) {
+    // Срабатывает 60 раз в секунду
+    fun update(entities: List<Entity>) {
         camera.update()
         batch.projectionMatrix = camera.combined
 
@@ -51,32 +52,45 @@ class Renderer(
                     it.draw(groundTexture, x * tileSize, y * tileSize, tileSize, tileSize)
 
                     // 2. Блокер, если есть
-                    cell.blocker?.let { blocker ->
-                        val blockerTexture = blockerTextures[blocker]
+                    cell.entity?.let { blocker ->
+                        val blockerTexture = entityTextures[blocker]
                         blockerTexture?.let {
                             batch.draw(it, x * tileSize, y * tileSize, tileSize, tileSize)
                         }
                     }
+
+                    // 3. Сущность
+                    /*cell.entity?.let { entity ->
+                        it.draw(entity.texture, x * tileSize, y * tileSize, tileSize, tileSize)
+                    }*/
                 }
             }
 
             // 3. Сущности
+            /*
             for (entity in entities) {
                 it.draw(entity.texture, entity.posX * tileSize, entity.posY * tileSize, tileSize, tileSize)
             }
+            */
+
         }
 
+
+    }
+
+    fun NightEffect()
+    {
         Gdx.gl.glEnable(GL20.GL_BLEND)
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-// а затем — затемнение
+        // а затем — затемнение
         shapeRenderer.projectionMatrix = camera.combined
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.color = Color(0.1f, 0.1f, 0.2f, darknessAlpha) // полупрозрачное затемнение
+        shapeRenderer.color = Color(0.1f, 0.1f, 0.2f, 0.4f) // полупрозрачное затемнение
         shapeRenderer.rect(
-            camera.position.x - camera.viewportWidth / 2f * camera.zoom,
-            camera.position.y - camera.viewportHeight / 2f * camera.zoom,
-            camera.viewportWidth * camera.zoom,
-            camera.viewportHeight * camera.zoom
+        camera.position.x - camera.viewportWidth / 2f * camera.zoom,
+        camera.position.y - camera.viewportHeight / 2f * camera.zoom,
+        camera.viewportWidth * camera.zoom,
+        camera.viewportHeight * camera.zoom
         )
         shapeRenderer.end()
         Gdx.gl.glDisable(GL20.GL_BLEND)
@@ -84,6 +98,6 @@ class Renderer(
 
     fun dispose() {
         groundTextures.values.forEach { it.dispose() }
-        blockerTextures.values.forEach { it.dispose() }
+        entityTextures.values.forEach { it.dispose() }
     }
 }
